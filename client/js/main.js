@@ -2,6 +2,7 @@
 
 var socket = io();
 const servers = null;  // Allows for RTC server configuration.
+let peerConnection;
 
 $(function () {
   $('form').submit(function () {
@@ -18,7 +19,14 @@ $(function () {
     alert('found offer, see console');
     // console.log({offer});
     var description = new RTCSessionDescription(offer);
-    var peerConnection = new RTCPeerConnection(servers);
+    peerConnection = new RTCPeerConnection(servers);
+
+    peerConnection.addEventListener('icecandidate', handleICECandidateEvent);
+    peerConnection.addEventListener('iceconnectionstatechange', handleICEConnectionStateChangeEvent);
+    peerConnection.addEventListener('icegatheringstatechange', handleICEGatheringStateChangeEvent);
+    peerConnection.addEventListener('signalingstatechange', handleSignalingStateChangeEvent);
+    peerConnection.addEventListener('track', handleTrackEvent);
+    
 
     peerConnection.setRemoteDescription(description).then(function() {
       return navigator.mediaDevices.getUserMedia(mediaStreamConstraints);
@@ -43,7 +51,14 @@ $(function () {
   socket.on('answer', function (answer) {
     alert('other end accepted our call');
     var desc = new RTCSessionDescription(answer);
-    localPeerConnection.setRemoteDescription(desc).catch(function() { console.error('error answer')});
+    peerConnection.setRemoteDescription(desc).catch(function() { console.error('error answer')});
+  });
+
+  socket.on('candidate', function (candidate) {
+    peerConnection.addIceCandidate(candidate)
+      .catch(function () {
+        console.error('error while adding new ice candidade to the connection')
+      });
   });
 });
 
@@ -69,160 +84,13 @@ const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
 
 let localStream;
-let remoteStream;
 
-let localPeerConnection;
-let remotePeerConnection;
-
-
-// Define MediaStreams callbacks.
-
-// Sets the MediaStream as the video element src.
-
-// Handles error by logging a message to the console.
-function handleLocalMediaStreamError(error) {
-  trace(`navigator.getUserMedia error: ${error.toString()}.`);
-}
-
-// Handles remote MediaStream success by adding it as the remoteVideo src.
-function gotRemoteMediaStream(event) {
-  const mediaStream = event.stream;
-  remoteVideo.srcObject = mediaStream;
-  remoteStream = mediaStream;
-  trace('Remote peer connection received remote stream.');
-}
-
-
-// Add behavior for video streams.
-
-// Logs a message with the id and size of a video element.
-function logVideoLoaded(event) {
-  const video = event.target;
-  trace(`${video.id} videoWidth: ${video.videoWidth}px, ` +
-    `videoHeight: ${video.videoHeight}px.`);
-}
-
-// Logs a message with the id and size of a video element.
-// This event is fired when video begins streaming.
-function logResizedVideo(event) {
-  logVideoLoaded(event);
-
-  if (startTime) {
-    const elapsedTime = window.performance.now() - startTime;
-    startTime = null;
-    trace(`Setup time: ${elapsedTime.toFixed(3)}ms.`);
+function handleICECandidateEvent(event) {
+  if (event.candidate) {
+    socket.emit('candidate', event.candidate);            
   }
 }
 
-localVideo.addEventListener('loadedmetadata', logVideoLoaded);
-remoteVideo.addEventListener('loadedmetadata', logVideoLoaded);
-remoteVideo.addEventListener('onresize', logResizedVideo);
-
-
-// Define RTC peer connection behavior.
-
-// Connects with new peer candidate.
-function handleConnection(event) {
-  const peerConnection = event.target;
-  const iceCandidate = event.candidate;
-
-  if (iceCandidate) {
-    const newIceCandidate = new RTCIceCandidate(iceCandidate);
-    const otherPeer = getOtherPeer(peerConnection);
-
-    otherPeer.addIceCandidate(newIceCandidate)
-      .then(() => {
-        handleConnectionSuccess(peerConnection);
-      }).catch((error) => {
-        handleConnectionFailure(peerConnection, error);
-      });
-
-    trace(`${getPeerName(peerConnection)} ICE candidate:\n` +
-      `${event.candidate.candidate}.`);
-  }
-}
-
-// Logs that the connection succeeded.
-function handleConnectionSuccess(peerConnection) {
-  trace(`${getPeerName(peerConnection)} addIceCandidate success.`);
-};
-
-// Logs that the connection failed.
-function handleConnectionFailure(peerConnection, error) {
-  trace(`${getPeerName(peerConnection)} failed to add ICE Candidate:\n` +
-    `${error.toString()}.`);
-}
-
-// Logs changes to the connection state.
-function handleConnectionChange(event) {
-  const peerConnection = event.target;
-  console.log('ICE state change event: ', event);
-  trace(`${getPeerName(peerConnection)} ICE state: ` +
-    `${peerConnection.iceConnectionState}.`);
-}
-
-// Logs error when setting session description fails.
-function setSessionDescriptionError(error) {
-  trace(`Failed to create session description: ${error.toString()}.`);
-}
-
-// Logs success when setting session description.
-function setDescriptionSuccess(peerConnection, functionName) {
-  const peerName = getPeerName(peerConnection);
-  trace(`${peerName} ${functionName} complete.`);
-}
-
-// Logs success when localDescription is set.
-function setLocalDescriptionSuccess(peerConnection) {
-  setDescriptionSuccess(peerConnection, 'setLocalDescription');
-}
-
-// Logs success when remoteDescription is set.
-function setRemoteDescriptionSuccess(peerConnection) {
-  setDescriptionSuccess(peerConnection, 'setRemoteDescription');
-}
-
-// Logs offer creation and sets peer connection session descriptions.
-function createdOffer(description) {
-  trace(`Offer from localPeerConnection:\n${description.sdp}`);
-
-  trace('localPeerConnection setLocalDescription start.');
-  localPeerConnection.setLocalDescription(description)
-    .then(() => {
-      setLocalDescriptionSuccess(localPeerConnection);
-    }).catch(setSessionDescriptionError);
-
-  trace('remotePeerConnection setRemoteDescription start.');
-  remotePeerConnection.setRemoteDescription(description)
-    .then(() => {
-      setRemoteDescriptionSuccess(remotePeerConnection);
-    }).catch(setSessionDescriptionError);
-
-  trace('remotePeerConnection createAnswer start.');
-  remotePeerConnection.createAnswer()
-    .then(createdAnswer)
-    .catch(setSessionDescriptionError);
-}
-
-// Logs answer to offer creation and sets peer connection session descriptions.
-function createdAnswer(description) {
-  trace(`Answer from remotePeerConnection:\n${description.sdp}.`);
-
-  trace('remotePeerConnection setLocalDescription start.');
-  remotePeerConnection.setLocalDescription(description)
-    .then(() => {
-      setLocalDescriptionSuccess(remotePeerConnection);
-    }).catch(setSessionDescriptionError);
-
-  trace('localPeerConnection setRemoteDescription start.');
-  localPeerConnection.setRemoteDescription(description)
-    .then(() => {
-      setRemoteDescriptionSuccess(localPeerConnection);
-    }).catch(setSessionDescriptionError);
-}
-
-
-// Define and add behavior to buttons.
 
 // Define action buttons.
 const startButton = document.getElementById('startButton');
@@ -244,7 +112,7 @@ function startAction() {
       trace('Received local stream.');
       callButton.disabled = false;  // Enable call button.
     })
-    .catch(handleLocalMediaStreamError);
+    .catch(function(error) { trace(`navigator.getUserMedia error: ${error.toString()}.`); });
   trace('Requesting local stream.');
 }
 
@@ -268,63 +136,44 @@ function callAction() {
 
 
   // Create peer connections and add behavior.
-  localPeerConnection = new RTCPeerConnection(servers);
-  trace('Created local peer connection object localPeerConnection.');
+  peerConnection = new RTCPeerConnection(servers);
+  trace('Created local peer connection object peerConnection.');
 
   // this event is triggered when RTCPeerConnection.setLocalDescription() is called
   // on the local side of the connection?
-  localPeerConnection.addEventListener('icecandidate', handleConnection);
+  peerConnection.addEventListener('icecandidate', handleICECandidateEvent);
+  peerConnection.addEventListener('iceconnectionstatechange', handleICEConnectionStateChangeEvent);
+  peerConnection.addEventListener('icegatheringstatechange', handleICEGatheringStateChangeEvent);
+  peerConnection.addEventListener('signalingstatechange', handleSignalingStateChangeEvent);
+  peerConnection.addEventListener('track', handleTrackEvent);
   
-  localPeerConnection.addEventListener(
-    'iceconnectionstatechange', handleConnectionChange);
-
-  remotePeerConnection = new RTCPeerConnection(servers);
-  trace('Created remote peer connection object remotePeerConnection.');
-
-  remotePeerConnection.addEventListener('icecandidate', handleConnection);
-  remotePeerConnection.addEventListener(
-    'iceconnectionstatechange', handleConnectionChange);
-  remotePeerConnection.addEventListener('addstream', gotRemoteMediaStream);
-
   // Add local stream to connection and create offer to connect.
-  // localPeerConnection.addStream(localStream); // deprecated
-  localStream.getTracks().forEach(track => localPeerConnection.addTrack(track, localStream));
-  trace('Added local stream to localPeerConnection.');
+  // peerConnection.addStream(localStream); // deprecated
+  localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+  trace('Added local stream to peerConnection.');
 
   // triggered as soon the attached media tracks are ready
-  localPeerConnection.addEventListener('negotiationneeded', function(event) {
-    trace('localPeerConnection createOffer start.');
-    localPeerConnection.createOffer(offerOptions)
+  peerConnection.addEventListener('negotiationneeded', function(event) {
+    trace('peerConnection createOffer start.');
+    peerConnection.createOffer(offerOptions)
       .then(function (description) {
-        trace(`Offer from localPeerConnection:\n${description.sdp}`);
+        trace(`Offer from peerConnection:\n${description.sdp}`);
 
-        return localPeerConnection.setLocalDescription(description);
+        return peerConnection.setLocalDescription(description);
       })
       .then(function() {
         // send offer to server
-        socket.emit('offer', localPeerConnection.localDescription);
+        socket.emit('offer', peerConnection.localDescription);
       })
-      //   trace('remotePeerConnection setRemoteDescription start.');
-      //   remotePeerConnection.setRemoteDescription(description)
-      //     .then(() => {
-      //       setRemoteDescriptionSuccess(remotePeerConnection);
-      //     }).catch(setSessionDescriptionError);
-
-      //   trace('remotePeerConnection createAnswer start.');
-      //   remotePeerConnection.createAnswer()
-      //     .then(createdAnswer)
-      //     .catch(setSessionDescriptionError);
-      // }).catch(setSessionDescriptionError);
   });
   
 }
 
 // Handles hangup action: ends up call, closes connections and resets peers.
 function hangupAction() {
-  localPeerConnection.close();
-  remotePeerConnection.close();
-  localPeerConnection = null;
-  remotePeerConnection = null;
+  peerConnection.close();
+  peerConnection = null;
   hangupButton.disabled = true;
   callButton.disabled = false;
   trace('Ending call.');
@@ -335,25 +184,54 @@ startButton.addEventListener('click', startAction);
 callButton.addEventListener('click', callAction);
 hangupButton.addEventListener('click', hangupAction);
 
-
-// Define helper functions.
-
-// Gets the "other" peer connection.
-function getOtherPeer(peerConnection) {
-  return (peerConnection === localPeerConnection) ?
-    remotePeerConnection : localPeerConnection;
-}
-
-// Gets the name of a certain peer connection.
-function getPeerName(peerConnection) {
-  return (peerConnection === localPeerConnection) ?
-    'localPeerConnection' : 'remotePeerConnection';
-}
-
 // Logs an action (text) and the time when it happened on the console.
 function trace(text) {
   text = text.trim();
   const now = (window.performance.now() / 1000).toFixed(3);
 
   console.log(now, text);
+}
+
+
+function handleICEConnectionStateChangeEvent(event) {
+  trace("*** ICE connection state changed to " + peerConnection.iceConnectionState);
+
+  switch (peerConnection.iceConnectionState) {
+    case "closed":
+    case "failed":
+    case "disconnected":
+      hangupAction();
+      break;
+  }
+}
+
+function handleICEGatheringStateChangeEvent(event) {
+  trace("*** ICE gathering state changed to: " + peerConnection.iceGatheringState);
+}
+
+// Set up a |signalingstatechange| event handler. This will detect when
+// the signaling connection is closed.
+//
+// NOTE: This will actually move to the new RTCPeerConnectionState enum
+// returned in the property RTCPeerConnection.connectionState when
+// browsers catch up with the latest version of the specification!
+
+function handleSignalingStateChangeEvent(event) {
+  trace("*** WebRTC signaling state changed to: " + peerConnection.signalingState);
+  switch (peerConnection.signalingState) {
+    case "closed":
+      hangupAction();
+      break;
+  }
+}
+
+
+// Called by the WebRTC layer when events occur on the media tracks
+// on our WebRTC call. This includes when streams are added to and
+// removed from the call.
+function handleTrackEvent(event) {
+  trace("*** Track event");
+  console.log(event.streams);
+  remoteVideo.srcObject = event.streams[0];
+  hangupButton.disabled = true;
 }
