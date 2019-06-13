@@ -1,6 +1,8 @@
 'use strict';
 
 var socket = io();
+
+// Allows for RTC server configuration.
 const servers = { 
   iceServers: [{ 
     urls: [
@@ -11,7 +13,8 @@ const servers = {
       'stun4.l.google.com',
     ] 
   }] 
-};;  // Allows for RTC server configuration.
+};
+
 let peerConnection;
 
 $(function () {
