@@ -4,7 +4,11 @@ var socket = io();
 
 // Allows for RTC server configuration.
 const servers = { 
-  iceServers: [{ 
+  iceServers: [{
+    urls: 'turn:numb.viagenie.ca',
+    username: 'kev_asher@edu.univali.br',
+    credential: 'guess*my*number',
+  },{ 
     urls: [
       'stun:stun.l.google.com',
       'stun:stun1.l.google.com',
