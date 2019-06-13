@@ -11,9 +11,11 @@
   <video id="remoteVideo" autoplay playsinline></video>
 
   <div>
-    <button id="startButton">Start</button>
-    <button id="callButton">Call</button>
-    <button id="hangupButton">Hang Up</button>
+    <form id="videoCallForm">
+      Room: <input id="roomInput">
+      <button id="callButton" type="submit">Entrar</button>
+      <button id="hangupButton">Sair</button>
+    </form>
   </div> 
 
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>

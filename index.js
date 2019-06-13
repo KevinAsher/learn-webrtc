@@ -13,25 +13,21 @@ app.use('/', express.static(path.join(__dirname, 'client')));
 
 io.on('connection', function(socket){
   console.log('user connected #' + socket.id);
-  socket.on('chat message', function(msg){
-    console.log(msg);
-    io.emit('chat message', msg);
-  });
 
   socket.on('offer', function (data) {
     console.log('relaying offer');
-    socket.broadcast.emit('offer', data);
+    socket.broadcast.to(data.room).emit('offer', data.offer);
   });
 
   socket.on('answer', function (data) {
     console.log('relaying answer');
-    socket.broadcast.emit('answer', data);
+    socket.broadcast.to(data.room).emit('answer', data.answer);
   });
 
 
   socket.on('candidate', function (data) {
     console.log('relaying candidate');
-    socket.broadcast.emit('candidate', data);
+    socket.broadcast.to(data.room).emit('candidate', data.candidate);
   });
 
   // somebody closed the browser tab
@@ -39,7 +35,14 @@ io.on('connection', function(socket){
     console.log('somebody disconnected');
   });
 
-  socket.broadcast.emit('new');
+  socket.on('join-room', function (room) {
+    socket.join(room);
+  });
+
+  socket.on('leave-room', function (room) {
+    socket.leave(room);
+  });
+
 });
 
 http.listen(port, function(){
