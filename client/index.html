@@ -8,6 +8,16 @@
   <h1>Realtime communication with WebRTC</h1>
 
   <!-- Insira HTML AQUI -->
+  <video id="localVideo" autoplay playsinline></video>
+  <video id="remoteVideo" autoplay playsinline></video>
+  
+  <div>
+    <form id="videoCallForm">
+      Room: <input id="roomInput">
+      <button id="callButton" type="submit">Entrar</button>
+      <button id="hangupButton">Sair</button>
+    </form>
+  </div>
 
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
   <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
