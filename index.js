@@ -28,6 +28,22 @@ io.on('connection', function (socket) {
     socket.leave(room);
   });
 
-
   // Insira o código que faz o trabalho do Signaling Server
+
+  socket.on('offer', function (data) {
+    console.log('relaying offer');
+    socket.broadcast.to(data.room).emit('offer', data.offer);
+  });
+
+  socket.on('answer', function (data) {
+    console.log('relaying answer');
+    socket.broadcast.to(data.room).emit('answer', data.answer);
+  });
+
+
+  socket.on('candidate', function (data) {
+    console.log('relaying candidate');
+    socket.broadcast.to(data.room).emit('candidate', data.candidate);
+  });
+
 });
