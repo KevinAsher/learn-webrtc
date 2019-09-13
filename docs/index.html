@@ -1,0 +1,483 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>WebRTC - Codelab</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="webrtc-demo-codelab"
+                  title="WebRTC - Codelab"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="Introdução" duration="0">
+        <h2 is-upgraded><strong>WebRTC - Web Real-Time Communication</strong></h2>
+<p class="image-container"><img style="width: 624.00px" src="img\f9469d807142ccb7.png"></p>
+<p>O uso de smartphones e tablets está aumentando rapidamente devido a possibilidade que esses dispositivos oferecem para realizar inúmeras tarefas desejadas. Além disso, a necessidade de uma melhor comunicação está crescendo de maneira inevitável e é aí que o <a href="https://www.3cx.com.br/webrtc/what-is-webrtc/" target="_blank">WebRTC </a>entra.</p>
+<p>WebRTC, conhecido também como Web Real-Time Communications, é um projeto de software livre promovido pelo Google, Mozilla e outros e permite Comunicações em tempo real livre de plugin via API do Javascript. Ele facilita aplicativos entre navegadores para chamada de voz, bate-papo por vídeo e compartilhamento de arquivo. O <a href="https://www.3cx.com.br/voip-sip/codecs/" target="_blank">codec</a> suportado para WebRTC é o <a href="https://www.3cx.com/pbx/vp8/" target="_blank">VP8</a>. O WebRTC usa um servidor chamado Servidor de Webconferência que, em conjunto com um <a href="https://www.3cx.com.br/voip-sip/stun-server/" target="_blank">Servidor STUN</a>, é exigido para fornecer a página inicial e sincronizar as conexões entre dois pontos de extremidade WebRTC.</p>
+<p>De modo geral, um padrão aberto para a incorporação de recursos de comunicação multimídia em tempo real diretamente em um navegador da Web. A estrutura de padrão aberto elimina a necessidade de software cliente, plugins e downloads. </p>
+<p>Justin Uberti afirma: &#34;WebRTC é a habilidade de se comunicar ao vivo com alguém, ou algo, como se você estivesse logo ao lado. WebRTC preenche uma lacuna importante na plataforma Web, pois você pode se comunicar em tempo real apenas carregando uma página da Web&#34;</p>
+<p>Brendan Eich disse: &#34;WebRTC é uma nova investida na guerra duradoura por uma Web aberta e livre&#34;.</p>
+<h2 is-upgraded><strong>Antes do WebRTC</strong></h2>
+<ul>
+<li>Comunicação entre navegadores precisava do plugin Flash</li>
+<li>Não era portátil, já que em dispositivos mobile Flash não é suportado ou consome muita bateria.</li>
+</ul>
+<p class="image-container"><img style="width: 285.00px" src="img\2be3ca403af97d33.png"></p>
+<h2 is-upgraded><strong>Arquitetura do WebRTC</strong></h2>
+<p class="image-container"><img style="width: 551.00px" src="img\3dff7e78d201b05a.png"></p>
+<h2 is-upgraded><strong>Resumo</strong></h2>
+<ul>
+<li>Projeto de Software Livre, promovido por Google e Mozilla;</li>
+<li>Permite comunicação entre navegadores de modo P2P (Peer-to-peer) em tempo real e livre de plugins;</li>
+<li>Está integrado ao navegador, não precisa de plugins;</li>
+<li>Chamada de voz, videoconferência, compartilhamento de arquivo e outros.</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Montando nosso ambiente de desenvolvimento" duration="0">
+        <h2 is-upgraded>Criar uma conta no Codesandbox</h2>
+<p>Iremos utilizar como IDE a <a href="https://codesandbox.io/" target="_blank">Codesandbox</a>, que é uma IDE online, idêntica à VSCode.</p>
+<p>Será necessário utilizar sua conta na Github para criar uma conta.</p>
+<p><a href="https://codesandbox.io/signin" target="_blank"><paper-button class="colored" raised>Criar uma conta no Codesandbox</paper-button></a></p>
+<aside class="warning"><p><strong>Observação:</strong> Uma conta no Github é necessário para completar este workshop.</p>
+</aside>
+<h2 is-upgraded>Criar um Sandbox</h2>
+<p>Iremos criar um ambiente isolado para o desenvolvimento a partir da criação de um sandbox. Se a criação da conta no Codesandbox ocorreu sem problemas, será possível criar um sandbox conforme instruções abaixo:</p>
+<p>Clique em Create Sandbox</p>
+<p class="image-container"><img style="width: 624.00px" src="img\8320e7afee5590d.png"></p>
+<p>Clique na aba IMPORT, em seguida insira o link <a href="https://github.com/KevinAsher/learn-webrtc/tree/codelab/1" target="_blank">https://github.com/KevinAsher/learn-webrtc/tree/codelab/1</a> e clique em Open Sandbox</p>
+<p class="image-container"><img style="width: 624.00px" src="img\7830a037ba1db97e.png"></p>
+<p>Após de terminar a importação do repositório, deverá ver uma tela conforme abaixo. Clique em Fork para criar sua própria cópia para iniciar o desenvolvimento.</p>
+<p class="image-container"><img style="width: 624.00px" src="img\f5264dd098969ed7.png"></p>
+<p>Pronto! O ambiente está pronto para desenvolvimento.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Visão Geral do projeto" duration="0">
+        <h2 is-upgraded>Linguagens utilizadas</h2>
+<ol type="1" start="1">
+<li>Javascript. Quanto na programação do lado do servidor como o lado do cliente (navegador).</li>
+<li>HTML5. Estrutura da página e funcionalidades de vídeo.</li>
+<li>CSS. Estilos da página, não é o foco portanto não iremos ver nada de CSS, porém existe na página.</li>
+</ol>
+<h2 is-upgraded>Como está organizado</h2>
+<ol type="1" start="1">
+<li>Quando fizermos uma requisição ao servidor (por exemplo, acessar a página principal) o nodejs irá receber nossa requisição e responder com a página principal. O arquivo que irá cuidar de toda interação com o servidor é o arquivo <a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/1/index.js" target="_blank">index.js</a>. Este já vêm com as bibliotecas a serem utilizadas, como também o mínimo para servir a página principal <a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/1/client/index.html" target="_blank">index.html</a>.</li>
+<li>O arquivo <a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/1/client/index.html" target="_blank">index.html</a> contém a página da aplicação. Este já vêm com o mínimo de boilerplate para iniciarmos rapidamente.</li>
+<li>O arquivo <a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/1/client/js/main.js" target="_blank">main.js</a> é o responsável por cuidar de toda a interatividade com a página, como também toda a comunicação envolvida no WebRTC.</li>
+</ol>
+<h2 is-upgraded><strong>Visual final do projeto</strong></h2>
+<p class="image-container"><img style="width: 624.00px" src="img\50d76a8556cf48d3.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Montando o HTML" duration="3">
+        <p>Nessa seção iremos montar a parte visual da página.</p>
+<h3 is-upgraded><a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/1/client/index.html" target="_blank">index.html</a></h3>
+<pre><code>&lt;!-- Insira HTML AQUI --&gt;
+&lt;video id=&#34;localVideo&#34; autoplay playsinline&gt;&lt;/video&gt;
+&lt;video id=&#34;remoteVideo&#34; autoplay playsinline&gt;&lt;/video&gt;
+
+&lt;div&gt;
+  &lt;form id=&#34;videoCallForm&#34;&gt;
+    Room: &lt;input id=&#34;roomInput&#34;&gt;
+    &lt;button id=&#34;callButton&#34; type=&#34;submit&#34;&gt;Entrar&lt;/button&gt;
+    &lt;button id=&#34;hangupButton&#34;&gt;Sair&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/div&gt; 
+</code></pre>
+<p>No arquivo <a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/1/client/index.html" target="_blank">index.html</a>acima, é configurado as tags local e remoto de vídeo, como também o campos necessários para poder realizar a entrada e saída de uma &#34;sala&#34;. Após de inserir o código deverá ficar da seguinte forma (clique no botão de recarregar no preview da página para visualizar a alteração).</p>
+<p class="image-container"><img style="width: 624.00px" src="img\44e9b18cbe8e24b4.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Stream de Vídeo e Socket.io" duration="0">
+        <p>Com o código abaixo, já podemos realizar uma conexão com o servidor para entrar em uma &#34;sala&#34;, e também visualizar a stream da câmera.</p>
+<h3 is-upgraded><a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/2/client/js/main.js" target="_blank">main.js</a></h3>
+<pre><code>&#39;use strict&#39;;
+/* global io, $ */
+
+// Insira o código de ínicio aqui
+
+// Define action buttons.
+const callButton = document.getElementById(&#34;callButton&#34;);
+const hangupButton = document.getElementById(&#34;hangupButton&#34;);
+
+let peerConnection;
+let room;
+
+// Set up media stream constant and parameters.
+// In this codelab, you will be streaming video only: &#34;video: true&#34;.
+// Audio will not be streamed because it is set to &#34;audio: false&#34; by default.
+const mediaStreamConstraints = {
+  video: true
+  // audio: true,
+};
+
+// Set up to exchange only video.
+const offerOptions = {
+  offerToReceiveVideo: 1,
+};
+
+let startTime = null;
+let localStream;
+
+// Set up initial action buttons status: disable call and hangup.
+hangupButton.disabled = true;
+
+// Allows for RTC server configuration.
+const servers = {
+  iceServers: [
+    {
+      urls: &#39;turn:numb.viagenie.ca&#39;,
+      username: &#39;kev_asher@edu.univali.br&#39;,
+      credential: &#39;guess*my*number&#39;,
+    },
+    {
+      urls: [
+        &#39;stun:stun.l.google.com:19302&#39;,
+        &#39;stun:stun1.l.google.com:19302&#39;,
+        &#39;stun:stun2.l.google.com:19302&#39;,
+        &#39;stun:stun3.l.google.com:19302&#39;,
+        &#39;stun:stun4.l.google.com:19302&#39;,
+      ]
+    }]
+};
+
+
+
+// Define peer connections, streams and video elements.
+const localVideo = document.getElementById(&#34;localVideo&#34;);
+const remoteVideo = document.getElementById(&#34;remoteVideo&#34;);
+
+// Logs an action (text) and the time when it happened on the console.
+function trace(text) {
+  text = text.trim();
+  const now = (window.performance.now() / 1000).toFixed(3);
+
+  console.log(now, text);
+}
+
+
+var socket = io();
+
+$(function () {
+  $(&#34;#videoCallForm&#34;).submit(function (event) {
+    event.preventDefault();
+    room = $(&#34;#roomInput&#34;).val();
+    socket.emit(&#34;join-room&#34;, room);
+
+    callAction();
+    return false;
+  });
+
+  // Insira o registro dos eventos do Socket.io aqui
+})
+
+
+// Handles call button action: creates peer connection.
+function callAction() {
+  navigator.mediaDevices
+    .getUserMedia(mediaStreamConstraints)
+    .then(function (mediaStream) {
+      localVideo.srcObject = mediaStream;
+      localStream = mediaStream;
+      trace(&#34;Received local stream.&#34;);
+
+      callButton.disabled = true;
+      hangupButton.disabled = false;
+
+      // Insira o ínicio da conexão Web RTC aqui
+    })
+}
+
+// Handles hangup action: ends up call, closes connections and resets peers.
+function hangupAction() {
+  // Encerra a conexão webrtc aqui
+
+
+  // Desabilita/habilita botões, emite sinal ao servidor para sair da sala 
+  hangupButton.disabled = true;
+  callButton.disabled = false;
+  socket.emit(&#39;leave-room&#39;, room);
+}
+
+// Add click event handlers for buttons.
+hangupButton.addEventListener(&#39;click&#39;, hangupAction);
+
+</code></pre>
+<h3 is-upgraded><a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/2/index.js" target="_blank">index.js</a></h3>
+<pre><code>const express = require(&#39;express&#39;);
+const path = require(&#39;path&#39;);
+const app = express();
+const http = require(&#39;http&#39;).Server(app);
+const io = require(&#39;socket.io&#39;)(http);
+const port = process.env.PORT || 3000;
+
+app.use(&#39;/&#39;, express.static(path.join(__dirname, &#39;client&#39;)));
+
+http.listen(port, function(){
+  console.log(&#39;listening on *:&#39; + port);
+});
+
+// Insira código do socket.io aqui
+io.on(&#39;connection&#39;, function (socket) {
+  console.log(&#39;user connected #&#39; + socket.id);
+
+  // somebody closed the browser tab
+  socket.on(&#39;disconnect&#39;, function () {
+    console.log(&#39;somebody disconnected&#39;);
+  });
+
+  socket.on(&#39;join-room&#39;, function (room) {
+    socket.join(room);
+  });
+
+  socket.on(&#39;leave-room&#39;, function (room) {
+    socket.leave(room);
+  });
+
+
+  // Insira o código que faz o trabalho do Signaling Server
+});
+</code></pre>
+<p>Em seguida, clique no painel de controle do servidor,  e clique em Restart Sandbox. Isso fará com que o daemon do nodejs seja reiniciado, com o novo código que inserimos. Também, clique no botão de recarregar da janela do preview. </p>
+<p class="image-container"><img style="width: 624.00px" src="img\6364b4e43f9f17fe.png"></p>
+<p>Se tiver tudo certo, irá ver na aba Terminal do preview, um log informando a conexão do seu navegador.</p>
+<p class="image-container"><img style="width: 379.00px" src="img\357da3f8116accdb.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="WebRTC API" duration="0">
+        <p>Para dois peers se comunicarem na web, um servidor de Signaling é necessário para que os dois peers compartilhem com um ao outro seus dados de SDP.</p>
+<p class="image-container"><img style="width: 624.00px" src="img\cded07a800e52021.png"></p>
+<p>As API&#39;s do WebRTC requer uma série de troca de mensagens seja realizada entre os peers antes da comunicação P2P seja realizada. Existem dois tipos de troca de mensagens, troca de mensagem SDP e troca de mensagem do tipo ICE Candidates.</p>
+<h2 is-upgraded><strong>Troca de mensagem SDP</strong></h2>
+<p>O SDP (Session Description Protocol) é um protocolo que serve para chegar à um mínimo em comum entre peers quando se fala de tecnologia a ser utilizado (Codecs, formatos de transmissão, etc). </p>
+<p>Sequência de chamada de API&#39;s:</p>
+<p class="image-container"><img style="width: 624.00px" src="img\5b445aaceccb67e8.png"></p>
+<h2 is-upgraded><strong>Troca de mensagem do tipo ICE Candidades</strong></h2>
+<p>O ICE Candidades, são as possíveis interfaces de rede, IP&#39;s, portas e protocolo (UDP ou TCP) em que os peers podem se comunicar. Cada peer irá listar suas possíveis conexões com a internet, e trocar essas informações entre os peers através do Signaling Server, para encontrar a melhor alternativa possível para a conexão P2P.</p>
+<p>Sequência de chamada de API&#39;s:</p>
+<p class="image-container"><img style="width: 624.00px" src="img\7c9e6900a9a1d3ff.png"></p>
+<h2 is-upgraded><strong>Implementação</strong></h2>
+<p>No nosso caso, realizamos a implementação do servidor utilizando o Nodejs, e da biblioteca Socket.io para implementar o handshake necessário para a entrada e saída em salas, como também a troca de dados entre os peers para estabelecerem uma conexão P2P.</p>
+<h3 is-upgraded><a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/3/index.js" target="_blank">index.js</a></h3>
+<pre><code>// Insira o código que faz o trabalho do Signaling Server
+
+  socket.on(&#39;offer&#39;, function (data) {
+    console.log(&#39;relaying offer&#39;);
+    socket.broadcast.to(data.room).emit(&#39;offer&#39;, data.offer);
+  });
+
+  socket.on(&#39;answer&#39;, function (data) {
+    console.log(&#39;relaying answer&#39;);
+    socket.broadcast.to(data.room).emit(&#39;answer&#39;, data.answer);
+  });
+
+  socket.on(&#39;candidate&#39;, function (data) {
+    console.log(&#39;relaying candidate&#39;);
+    socket.broadcast.to(data.room).emit(&#39;candidate&#39;, data.candidate);
+  });</code></pre>
+<p>Em seguida, clique no painel de controle do servidor,  e clique em Restart Sandbox. Isso fará com que o daemon do nodejs seja reiniciado, com o novo código que inserimos.</p>
+<p class="image-container"><img style="width: 624.00px" src="img\6364b4e43f9f17fe.png"></p>
+<h3 is-upgraded><a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/3/client/js/main.js" target="_blank">main.js</a></h3>
+<pre><code>// Insira o registro dos eventos do Socket.io aqui
+  socket.on(&#39;offer&#39;, function (offer) {
+    // alert(&#39;found offer, see console&#39;);
+    // console.log({offer});
+    var description = new RTCSessionDescription(offer);
+    // peerConnection &amp;&amp; peerConnection.close(); // close any previous connection
+    peerConnection = new RTCPeerConnection(servers);
+
+    peerConnection.addEventListener(&#39;icecandidate&#39;, handleICECandidateEvent);
+    peerConnection.addEventListener(&#39;iceconnectionstatechange&#39;, handleICEConnectionStateChangeEvent);
+    peerConnection.addEventListener(&#39;icegatheringstatechange&#39;, handleICEGatheringStateChangeEvent);
+    peerConnection.addEventListener(&#39;signalingstatechange&#39;, handleSignalingStateChangeEvent);
+    peerConnection.addEventListener(&#39;track&#39;, handleTrackEvent);
+
+
+    peerConnection.setRemoteDescription(description).then(function () {
+      return navigator.mediaDevices.getUserMedia(mediaStreamConstraints);
+    })
+      .then(function (stream) {
+        localVideo.srcObject = stream;
+
+        stream.getTracks().forEach(track =&gt; peerConnection.addTrack(track, stream));
+      })
+      .then(function () {
+        return peerConnection.createAnswer();
+      })
+      .then(function (description) {
+        return peerConnection.setLocalDescription(description);
+      })
+      .then(function () {
+        socket.emit(&#39;answer&#39;, { room: room, answer: peerConnection.localDescription });
+      })
+
+  });
+
+  socket.on(&#39;answer&#39;, function (answer) {
+    // alert(&#39;other end accepted our call&#39;);
+    var desc = new RTCSessionDescription(answer);
+    peerConnection.setRemoteDescription(desc).catch(function () { console.error(&#39;error answer&#39;) });
+  });
+
+  socket.on(&#39;candidate&#39;, function (candidate) {
+    peerConnection.addIceCandidate(candidate)
+      .catch(function () {
+        console.error(&#39;error while adding new ice candidade to the connection&#39;)
+      });
+  });
+
+
+</code></pre>
+<h3 is-upgraded><a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/3/client/js/main.js" target="_blank">main.js</a></h3>
+<pre><code>// Insira o ínicio da conexão Web RTC aqui
+      trace(&#39;Starting call.&#39;);
+      startTime = window.performance.now();
+
+      // Get local media stream tracks.
+      const videoTracks = localStream.getVideoTracks();
+      const audioTracks = localStream.getAudioTracks();
+      if (videoTracks.length &gt; 0) {
+        trace(`Using video device: ${videoTracks[0].label}.`);
+      }
+      if (audioTracks.length &gt; 0) {
+        trace(`Using audio device: ${audioTracks[0].label}.`);
+      }
+
+
+      // Create peer connections and add behavior.
+      // peerConnection &amp;&amp; peerConnection.close(); // close any previous connection
+
+      peerConnection = new RTCPeerConnection(servers);
+      trace(&#39;Created local peer connection object peerConnection.&#39;);
+
+      // this event is triggered when RTCPeerConnection.setLocalDescription() is called
+      // on the local side of the connection?
+      peerConnection.addEventListener(&#39;icecandidate&#39;, handleICECandidateEvent);
+      peerConnection.addEventListener(&#39;iceconnectionstatechange&#39;, handleICEConnectionStateChangeEvent);
+      peerConnection.addEventListener(&#39;icegatheringstatechange&#39;, handleICEGatheringStateChangeEvent);
+      peerConnection.addEventListener(&#39;signalingstatechange&#39;, handleSignalingStateChangeEvent);
+      peerConnection.addEventListener(&#39;track&#39;, handleTrackEvent);
+
+      // Add local stream to connection and create offer to connect.
+      // peerConnection.addStream(localStream); // deprecated
+      localStream.getTracks().forEach(track =&gt; peerConnection.addTrack(track, localStream));
+
+      trace(&#39;Added local stream to peerConnection.&#39;);
+
+      // triggered as soon the attached media tracks are ready
+      peerConnection.addEventListener(&#39;negotiationneeded&#39;, function (event) {
+        trace(&#39;peerConnection createOffer start.&#39;);
+        peerConnection.createOffer(offerOptions)
+          .then(function (description) {
+            trace(`Offer from peerConnection:\n${description.sdp}`);
+
+            return peerConnection.setLocalDescription(description);
+          })
+          .then(function () {
+            // send offer to server
+            socket.emit(&#39;offer&#39;, { room: room, offer: peerConnection.localDescription });
+
+          })
+      });
+</code></pre>
+<h3 is-upgraded><a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/3/client/js/main.js" target="_blank">main.js</a></h3>
+<pre><code>// Encerra a conexão webrtc aqui
+  peerConnection.close();
+  peerConnection = null;
+  trace(&#39;Ending call.&#39;);
+
+
+</code></pre>
+<h3 is-upgraded><a href="https://github.com/KevinAsher/learn-webrtc/blob/codelab/3/client/js/main.js" target="_blank">main.js</a></h3>
+<pre><code>// Insira o código abaixo no final do arquivo
+function handleICECandidateEvent(event) {
+  if (event.candidate) {
+    socket.emit(&#39;candidate&#39;, { room: room, candidate: event.candidate });
+  }
+}
+
+function handleICEConnectionStateChangeEvent(event) {
+  trace(&#34;*** ICE connection state changed to &#34; + peerConnection.iceConnectionState);
+
+  switch (peerConnection.iceConnectionState) {
+    case &#34;closed&#34;:
+    case &#34;failed&#34;:
+    case &#34;disconnected&#34;:
+      // hangupAction();
+      break;
+  }
+}
+
+function handleICEGatheringStateChangeEvent(event) {
+  trace(&#34;*** ICE gathering state changed to: &#34; + peerConnection.iceGatheringState);
+}
+
+// Set up a |signalingstatechange| event handler. This will detect when
+// the signaling connection is closed.
+//
+// NOTE: This will actually move to the new RTCPeerConnectionState enum
+// returned in the property RTCPeerConnection.connectionState when
+// browsers catch up with the latest version of the specification!
+
+function handleSignalingStateChangeEvent(event) {
+  trace(&#34;*** WebRTC signaling state changed to: &#34; + peerConnection.signalingState);
+  switch (peerConnection.signalingState) {
+    case &#34;closed&#34;:
+      // hangupAction();
+      break;
+  }
+}
+
+
+// Called by the WebRTC layer when events occur on the media tracks
+// on our WebRTC call. This includes when streams are added to and
+// removed from the call.
+function handleTrackEvent(event) {
+  trace(&#34;*** Track event&#34;);
+  console.log(event.streams);
+  remoteVideo.srcObject = event.streams[0];
+  hangupButton.disabled = false;
+}
+</code></pre>
+<p>Pronto! Agora clique no botão de recarregar da janela do preview. </p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>

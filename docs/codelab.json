@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2019-09-12T23:01:47Z",
+  "id": "webrtc-demo-codelab",
+  "duration": 3,
+  "title": "WebRTC - Codelab",
+  "summary": "",
+  "source": "1qTduJiw3wXUJxPLBKRNYU5OuOLnZhGnM-bivyrF7VPI",
+  "theme": "web",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "Web"
+  ],
+  "tags": [
+    "univali-2019"
+  ],
+  "url": "webrtc-demo-codelab"
+}
